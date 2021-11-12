@@ -57,11 +57,11 @@ async function run() {
         // modify pending status
         app.put('/orders', async (req, res) => {
             const data = req.body;
-            const id=req.body.id
-            const type=req.body.type;
-            const filter={_id:ObjectId(id)}
-            const updateDocs={$set: {status:type}}
-            const result = await ordersCollection.updateOne(filter,updateDocs)
+            const id = req.body.id
+            const type = req.body.type;
+            const filter = { _id: ObjectId(id) }
+            const updateDocs = { $set: { status: type } }
+            const result = await ordersCollection.updateOne(filter, updateDocs)
             res.json(result)
             console.log('confirmation data', result)
         })
@@ -125,6 +125,18 @@ async function run() {
             res.json(users)
         })
 
+        // load admin 
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email: email }
+            const result = await usersCollection.findOne(query)
+            let isAdmin = false
+            if (result?.role === 'admin') {
+                isAdmin = true
+            }
+            res.json({admin:isAdmin})
+            console.log(isAdmin)
+        })
 
     }
     finally {
