@@ -22,6 +22,7 @@ async function run() {
         const carsCollection = database.collection('cars')
         const ordersCollection = database.collection('orders')
         const reviewsCollection = database.collection('reviews')
+        const usersCollection = database.collection('users')
 
         // load all cars
         app.get('/cars', async (req, res) => {
@@ -36,14 +37,33 @@ async function run() {
             const result = await ordersCollection.insertOne(order)
             res.json(result)
         })
+        // load all orders
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({})
+            const result = await cursor.toArray()
+            res.json(result)
+        })
 
         // load specific user orders
-        app.get('/orders', async (req, res) => {
+        app.get('/order', async (req, res) => {
             const email = req.query.email
             const query = { email: email }
             const cursor = ordersCollection.find(query)
             const result = await cursor.toArray()
             res.json(result)
+        })
+
+
+        // modify pending status
+        app.put('/orders', async (req, res) => {
+            const data = req.body;
+            const id=req.body.id
+            const type=req.body.type;
+            const filter={_id:ObjectId(id)}
+            const updateDocs={$set: {status:type}}
+            const result = await ordersCollection.updateOne(filter,updateDocs)
+            res.json(result)
+            console.log('confirmation data', result)
         })
 
         // delete specific order
@@ -52,6 +72,7 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query)
             res.json(result)
+            console.log(result)
         })
 
         // post reviews data to db
@@ -67,6 +88,44 @@ async function run() {
             const result = await cursor.toArray()
             res.json(result)
         })
+
+        // post all user by email and user name to db
+        app.post('/users', async (req, res) => {
+            const user = req.body
+            const result = await usersCollection.insertOne(user)
+            res.json(result)
+            console.log(result)
+        })
+
+        // post all user by google sign in to db
+        app.put('/users', async (req, res) => {
+            const email = req.body.email
+            const user = req.body;
+            const filter = { email: email }
+            const options = { upsert: true };
+            const updateDocs = { $set: user }
+            const result = await usersCollection.updateOne(filter, updateDocs, options)
+            res.json(result)
+        })
+
+        // make admin
+        app.put('/users/admin', async (req, res) => {
+            console.log('admin hitted')
+            const email = req.body.email;
+            const filter = { email: email }
+            const updateDocs = { $set: { role: 'admin' } }
+            const result = await usersCollection.updateOne(filter, updateDocs)
+            res.json(result)
+            console.log(result)
+        })
+        // load all users
+        app.get('/users', async (req, res) => {
+            const cursor = usersCollection.find({})
+            const users = await cursor.toArray()
+            res.json(users)
+        })
+
+
     }
     finally {
         // await client.close()
