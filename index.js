@@ -31,6 +31,25 @@ async function run() {
             res.json(result)
         })
 
+        // delete specific car
+        app.delete('/cars/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await carsCollection.deleteOne(filter)
+            res.json(result)
+        })
+
+        //   update car info
+        app.put('/cars/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedInfo = req.body;
+            const filter = { _id: ObjectId(id) }
+            const updateDocs = { $set: updatedInfo }
+            const result = await carsCollection.updateOne(filter, updateDocs)
+            res.json(result)
+        })
+
+
         // add a new car to db
 
         app.post('/cars', async (req, res) => {
