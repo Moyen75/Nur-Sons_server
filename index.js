@@ -90,7 +90,6 @@ async function run() {
             const updateDocs = { $set: { status: type } }
             const result = await ordersCollection.updateOne(filter, updateDocs)
             res.json(result)
-            console.log('confirmation data', result)
         })
 
         // delete specific order
@@ -99,7 +98,6 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query)
             res.json(result)
-            console.log(result)
         })
 
         // post reviews data to db
@@ -121,7 +119,6 @@ async function run() {
             const user = req.body
             const result = await usersCollection.insertOne(user)
             res.json(result)
-            console.log(result)
         })
 
         // post all user by google sign in to db
@@ -143,7 +140,6 @@ async function run() {
             const updateDocs = { $set: { role: 'admin' } }
             const result = await usersCollection.updateOne(filter, updateDocs)
             res.json(result)
-            console.log(result)
         })
         // load all users
         app.get('/users', async (req, res) => {
@@ -162,7 +158,14 @@ async function run() {
                 isAdmin = true
             }
             res.json({ admin: isAdmin })
-            console.log(isAdmin)
+        })
+
+        // delete a specific user
+        app.delete('/users/:id',async(req,res)=>{
+            const id = req.params.id;
+            const filter={_id:ObjectId(id)}
+            const result= await usersCollection.deleteOne(filter)
+            res.json(result)
         })
 
     }
