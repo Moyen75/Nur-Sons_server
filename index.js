@@ -31,6 +31,14 @@ async function run() {
             res.json(result)
         })
 
+        // add a new car to db
+
+        app.post('/cars', async (req, res) => {
+            const car = req.body;
+            const result = await carsCollection.insertOne(car)
+            res.json(result)
+        })
+
         // add orders to db
         app.post('/orders', async (req, res) => {
             const order = req.body;
@@ -134,7 +142,7 @@ async function run() {
             if (result?.role === 'admin') {
                 isAdmin = true
             }
-            res.json({admin:isAdmin})
+            res.json({ admin: isAdmin })
             console.log(isAdmin)
         })
 
